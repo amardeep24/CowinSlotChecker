@@ -1,3 +1,6 @@
+/**
+ * @author Amardeep Bhowmick <amardeep.bhowmick92@gmail.com>
+ */
 const fetch = require('node-fetch');
 
 const {
@@ -6,11 +9,13 @@ const {
     genHashOfOtp
 } = require("./utils");
 
-const OTP_GEN_URL = "https://cdn-api.co-vin.in/api/v2/auth/public/generateOTP";
-const VALIDATE_OTP_URL = "https://cdn-api.co-vin.in/api/v2/auth/public/confirmOTP";
-const SEARCH_DISTRICT_API_URL = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByDistrict";
-const STATE_URL = "https://cdn-api.co-vin.in/api/v2/admin/location/states";
-const DISTRICT_URL = "https://cdn-api.co-vin.in/api/v2/admin/location/districts";
+const {
+    OTP_GEN_URL,
+    VALIDATE_OTP_URL,
+    SEARCH_DISTRICT_API_URL,
+    STATE_URL,
+    DISTRICT_URL
+} = require("./constants");
 
 const API_HEADERS = {
     'Content-Type': 'application/json',
@@ -28,7 +33,11 @@ const API_HEADERS = {
     'accept-language': 'en-US,en;q=0.9,zh;q=0.8,ja;q=0.7,ko;q=0.6'
 };
 
-
+/**
+ * Fetches stateId from state name
+ * @param {*} stateName 
+ * @returns 
+ */
 const fetchStateIdByStateName = async(stateName) => {
     try {
         const response = await fetch(STATE_URL, {
@@ -44,6 +53,12 @@ const fetchStateIdByStateName = async(stateName) => {
     }
 };
 
+/**
+ * Fetches districtID from stateId and district name
+ * @param {*} stateId 
+ * @param {*} districtName 
+ * @returns 
+ */
 const fetchDistrictIdFromStateIdAndDistrictName = async(stateId, districtName) => {
     try {
         const response = await fetch(encodeURI(DISTRICT_URL + "/" + stateId), {
@@ -57,8 +72,13 @@ const fetchDistrictIdFromStateIdAndDistrictName = async(stateId, districtName) =
         console.error("Request failed...", e);
         throw e;
     }
-}
+};
 
+/**
+ * Fetches the txnId from mobile number and send OTP in SMS
+ * @param {*} mobile 
+ * @returns 
+ */
 const fetchTxnIdByMobile = async(mobile) => {
     const otpPayload = { mobile };
     try {
@@ -77,8 +97,14 @@ const fetchTxnIdByMobile = async(mobile) => {
         console.error("Request failed...", e);
         throw e;
     }
-}
+};
 
+/**
+ * Takes the OTP from the user and the txnID to get auth token
+ * @param {*} otp 
+ * @param {*} txnId 
+ * @returns 
+ */
 const fetchTokenByTxnIdAndOtp = async(otp, txnId) => {
     const validatePayload = { otp: genHashOfOtp(otp), txnId };
     try {
@@ -93,8 +119,14 @@ const fetchTokenByTxnIdAndOtp = async(otp, txnId) => {
         console.error("Request failed...", e);
         throw e;
     }
-}
+};
 
+/**
+ * Takes the districtID and auth token to find availability
+ * @param {*} districtId 
+ * @param {*} token 
+ * @returns 
+ */
 const fetchAvailabilityByDistrict = async(districtId, token) => {
     const byDisrictURL = getUrlFromParams(SEARCH_DISTRICT_API_URL, { district_id: districtId, date: getDate() });
     try {
@@ -113,7 +145,7 @@ const fetchAvailabilityByDistrict = async(districtId, token) => {
         console.error("Request failed...", e);
         throw e;
     }
-}
+};
 
 module.exports = {
     fetchStateIdByStateName,

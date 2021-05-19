@@ -1,5 +1,5 @@
 /**
- * Built by Amardeep Bhowmick
+ * @author Amardeep Bhowmick <amardeep.bhowmick92@gmail.com>
  */
 
 const {
@@ -18,24 +18,29 @@ const {
 const [_, __, mobile, age, stateName, districtName, ...rest] = process.argv;
 
 const performSearch = (data) => {
-    let counter = 1000;
+    let counter = 100;
     const isSlotAvailabe = getAvailability(data, age);
     if (!isSlotAvailabe) {
-        console.log("No slots available...");
-        console.log("......");
+        console.log("No slots available now.");
+        console.log("Retrying request in 3 secs ....");
     }
     counter--;
     if (counter !== 0) {
-        setTimeout(() => performSearch(data), 1000);
+        setTimeout(() => performSearch(data), 3000);
     }
 };
 
 (async() => {
-    const stateId = await fetchStateIdByStateName(stateName);
-    const districtId = await fetchDistrictIdFromStateIdAndDistrictName(stateId, districtName);
-    const txnId = await fetchTxnIdByMobile(mobile);
-    const otp = await getOtpFromUser();
-    const token = await fetchTokenByTxnIdAndOtp(otp, txnId);
-    const data = await fetchAvailabilityByDistrict(districtId, token);
-    setTimeout(() => performSearch(data), 0);
+    try {
+        const stateId = await fetchStateIdByStateName(stateName);
+        const districtId = await fetchDistrictIdFromStateIdAndDistrictName(stateId, districtName);
+        const txnId = await fetchTxnIdByMobile(mobile);
+        const otp = await getOtpFromUser();
+        const token = await fetchTokenByTxnIdAndOtp(otp, txnId);
+        const data = await fetchAvailabilityByDistrict(districtId, token);
+        setTimeout(() => performSearch(data), 0);
+    } catch (e) {
+        console.error("Something went wrong, please try again...", e);
+        throw e;
+    }
 })();
