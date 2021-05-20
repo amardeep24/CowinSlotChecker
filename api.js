@@ -87,8 +87,9 @@ const fetchTxnIdByMobile = async(mobile) => {
             headers: API_HEADERS,
             body: JSON.stringify(otpPayload),
         });
-        console.log("status", response.status);
-        if (response.status === 400) {
+        if (response.status === 200) {
+            console.log("OTP sent successfully to your mobile number.")
+        } else if (response.status === 400) {
             console.log("OTP already sent, please try after 3 mins");
         }
         const data = await response.json();

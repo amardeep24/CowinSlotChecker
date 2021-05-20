@@ -4,7 +4,7 @@
 
 const {
     getOtpFromUser,
-    getAvailability
+    getAvailableVaccinationCenters
 } = require("./utils");
 
 const {
@@ -17,13 +17,52 @@ const {
 
 const [_, __, mobile, age, stateName, districtName, ...rest] = process.argv;
 
+/**
+ * Starts the process of querying the vaccine APIs every 3 secs.
+ * @param {*} data 
+ */
 const performSearch = (data) => {
     let counter = 100;
-    const isSlotAvailabe = getAvailability(data, age);
-    if (!isSlotAvailabe) {
+    const vaccCenters = getAvailableVaccinationCenters(data, age);
+    if (vaccCenters && vaccCenters.length) {
+        vaccCenters.forEach(({
+            name,
+            address,
+            block_name,
+            pincode,
+            fee_type,
+            sessions
+        }) => {
+            console.log("=====================Vaccine available======================");
+            const centerDetails =
+                "Center name: " + name + "\n" +
+                "Address: " + address + "\n" +
+                "Block: " + block_name + "\n" +
+                "Pincode: " + pincode + "\n" +
+                "Payment type: " + fee_type + "\n";
+            console.log(centerDetails);
+            console.log("=========================Sessions===========================");
+            sessions.forEach(({
+                date,
+                available_capacity,
+                vaccine,
+                available_capacity_dose1,
+                available_capacity_dose2
+            }) => {
+                const sessionDetails =
+                    "Date: " + date + "\n" +
+                    "Capacity: " + available_capacity + "\n" +
+                    "Vaccine administered: " + vaccine + "\n" +
+                    "Dose 1 capacity: " + available_capacity_dose1 + "\n" +
+                    "Dose 2 capacity: " + available_capacity_dose2 + "\n";
+                console.log(sessionDetails);
+            });
+            console.log("============================================================");
+        });
+    } else {
         console.log("No slots available now.");
-        console.log("Retrying request in 3 secs ....");
     }
+    console.log("Retrying request in 3 secs ....");
     counter--;
     if (counter !== 0) {
         setTimeout(() => performSearch(data), 3000);

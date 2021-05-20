@@ -34,4 +34,4 @@ Install NodeJS
 
 ### Screen shot
 
-[![script.png](https://i.postimg.cc/x8yCVG2K/script.png)](https://postimg.cc/H8nHQyjx)
+[![script.png](https://i.postimg.cc/5ND3YdHK/script.png)](https://postimg.cc/1fc62drD)

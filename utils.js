@@ -62,14 +62,12 @@ const genHashOfOtp = (otp) => {
  * @param {*} age 
  * @returns 
  */
-const getAvailability = (data, age) => {
-    return data.centers.some(center => {
+const getAvailableVaccinationCenters = (data, age) => {
+    return data.centers.filter(center => {
         const availableSessions = center.sessions.filter(session => {
             return session.available_capacity > 0 && session.min_age_limit == age
         });
         if (availableSessions.length) {
-            console.log("Slot available in: ", center.name, " located in ", center.address, " pincode ", center.pincode);
-            console.log("Dose 1 capacity:", center.available_capacity_dose1 || "NA", "Dose 2 capacity:", center.available_capacity_dose2 || "NA");
             return true;
         }
         return false;
@@ -81,5 +79,5 @@ module.exports = {
     getOtpFromUser,
     getDate,
     genHashOfOtp,
-    getAvailability
+    getAvailableVaccinationCenters
 }
